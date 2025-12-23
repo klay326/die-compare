@@ -1,142 +1,206 @@
-# Deployment Guide - Render
+# Deployment Guide - PythonAnywhere
 
-This guide will help you deploy Die Compare to Render's free tier.
+This guide will help you deploy Die Compare to PythonAnywhere (free tier available).
+
+## Why PythonAnywhere?
+
+- ✅ Designed for Python web apps (no version conflicts)
+- ✅ Free tier is generous for side projects
+- ✅ Super easy setup - just upload code
+- ✅ Built-in database support
+- ✅ Custom domain support
+- ✅ No Docker, no build nightmares
 
 ## Prerequisites
 
-1. GitHub account (push your code there)
-2. Render account (free at https://render.com)
+1. GitHub account (your repo is already there)
+2. PythonAnywhere account (free at https://www.pythonanywhere.com)
+3. Custom domain (optional, but recommended)
 
-## Step 1: Push to GitHub
+## Step-by-Step Deployment
+
+### Step 1: Sign Up for PythonAnywhere
+
+1. Go to https://www.pythonanywhere.com
+2. Click "Start running Python online"
+3. Sign up with email (or GitHub login)
+4. Choose the **Free** plan
+5. Verify email and complete setup
+
+### Step 2: Clone Your Repository
+
+1. In PythonAnywhere, click on **"Consoles"** tab at the top
+2. Start a **"Bash"** console
+3. Clone your repo:
 
 ```bash
-cd ~/Documents/Die\ Compare
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/YOUR_USERNAME/die-compare.git
-git branch -M main
-git push -u origin main
+cd ~
+git clone https://github.com/klay326/die-compare.git
+cd die-compare
 ```
 
-## Step 2: Deploy Backend to Render
+### Step 3: Set Up Python Virtual Environment
 
-1. Go to https://render.com and sign up
-2. Click "New +" → "Web Service"
-3. Connect your GitHub repo
-4. Select the `die-compare` repository
-5. Fill in the details:
-   - **Name**: `die-compare-api`
-   - **Environment**: `Python 3`
-   - **Build Command**: `pip install -r backend/requirements.txt`
-   - **Start Command**: `cd backend && python -m uvicorn main:app --host 0.0.0.0 --port $PORT`
-   - **Plan**: `Free`
-6. Click "Create Web Service"
-7. Wait for deployment (takes 2-3 minutes)
-8. Copy your backend URL (e.g., `https://die-compare-api.onrender.com`)
+In the same bash console:
 
-## Step 3: Deploy Frontend to GitHub Pages
-
-1. Update `frontend/vite.config.js`:
-```javascript
-export default {
-  base: '/', // or '/die-compare' if using as a project site
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://die-compare-api.onrender.com',
-        changeOrigin: true
-      }
-    }
-  }
-}
-```
-
-2. Create GitHub Actions workflow `.github/workflows/deploy.yml`:
-```yaml
-name: Deploy Frontend
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: cd frontend && npm install && npm run build
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/dist
-```
-
-3. In GitHub repo Settings:
-   - Go to "Pages"
-   - Set Source to "GitHub Actions"
-
-4. Push changes:
 ```bash
-git add .
-git commit -m "Add deployment config"
-git push
+mkvirtualenv --python=/usr/bin/python3.9 diecompare
+pip install -r backend/requirements.txt
+cd frontend && npm install && npm run build
 ```
 
-## Step 4: Update Backend CORS for Frontend
+### Step 4: Create a Web App
 
-1. Note your GitHub Pages URL (usually `https://YOUR_USERNAME.github.io/die-compare`)
-2. Go to Render dashboard → Your service → "Environment"
-3. Add environment variable:
-   - **Key**: `FRONTEND_URL`
-   - **Value**: `https://YOUR_USERNAME.github.io/die-compare`
-4. Render will auto-redeploy
+1. Go to **"Web"** tab
+2. Click **"Add a new web app"**
+3. Choose **"Python 3.9"**
+4. It will create a default app - we'll customize it
 
-## Step 5: Configure Frontend API URL
+### Step 5: Configure WSGI File
 
-Create `frontend/.env.production`:
+1. Click on your web app in the "Web" tab
+2. Under "Code" section, find **"WSGI configuration file"**
+3. Click the path (e.g., `/var/www/yourusername_pythonanywhere_com_wsgi.py`)
+4. Replace the entire content with:
+
+```python
+import sys
+import os
+
+# Add your project directory to the Python path
+project_dir = os.path.expanduser('~/die-compare')
+sys.path.insert(0, project_dir)
+
+# Activate virtual environment
+activate_this = os.path.expanduser('~/.virtualenvs/diecompare/bin/activate_this.py')
+with open(activate_this) as f:
+    exec(f.read(), {'__file__': activate_this})
+
+# Import and run FastAPI app
+from backend.main import app
+
+# WSGI application
+application = app
 ```
-VITE_API_URL=https://die-compare-api.onrender.com
-```
 
-Update `frontend/src/main.jsx` to use it:
-```javascript
-import axios from 'axios'
+5. Click **"Save"**
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-axios.defaults.baseURL = apiUrl
-```
+### Step 6: Configure Static Files (Frontend)
+
+Back in the **"Web"** tab, in the **"Static files"** section:
+
+1. Click **"Add a new static files entry"**
+2. Fill in:
+   - **URL**: `/`
+   - **Directory**: `/home/yourusername/die-compare/frontend/dist`
+3. Click **"Add"**
+
+### Step 7: Set Environment Variables
+
+In the **"Web"** tab, scroll down to **"Environment variables"**:
+
+1. Click **"Add a new variable"**
+2. Add:
+   - **Name**: `FRONTEND_URL`
+   - **Value**: `https://yourusername.pythonanywhere.com`
+
+### Step 8: Reload Web App
+
+At the top of the **"Web"** tab, click the green **"Reload"** button.
+
+Wait 10 seconds, then visit `https://yourusername.pythonanywhere.com` 🎉
 
 ## Testing
 
-1. Frontend: Visit `https://YOUR_USERNAME.github.io/die-compare`
-2. Backend: Visit `https://die-compare-api.onrender.com/docs` (API docs)
-3. Try the import button to test backend connection
+1. **Frontend loads**: Visit `https://yourusername.pythonanywhere.com`
+2. **Backend works**: Visit `https://yourusername.pythonanywhere.com/docs` (should see API docs)
+3. **Import button works**: Click "Import Public Data" - should see die entries populate
 
-## Using Custom Domain (Optional)
+## Using a Custom Domain
 
-Both Render and GitHub Pages support custom domains:
+1. **Buy a domain** (Namecheap, GoDaddy, etc.)
+2. In PythonAnywhere **Web** tab:
+   - Under "Web app name", click **"Add a domain"**
+   - Enter your domain
+3. **Update DNS records** at your domain provider:
+   - Point to: `yourusername.pythonanywhere.com`
+   - (PythonAnywhere will show exact instructions)
+4. **Add HTTPS certificate** (automatic with Let's Encrypt)
 
-1. **For Render backend**:
-   - Buy a domain (Namecheap, GoDaddy, etc.)
-   - In Render settings, add custom domain
-   - Update DNS records as instructed
+## Updating Your App
 
-2. **For GitHub Pages frontend**:
-   - Create `CNAME` file in `frontend/public/` with your domain
-   - Update DNS records
+Every time you push code to GitHub:
+
+```bash
+# SSH into PythonAnywhere console
+cd ~/die-compare
+git pull origin main
+
+# If you changed requirements.txt:
+pip install -r backend/requirements.txt
+
+# If you changed frontend code:
+cd frontend && npm install && npm run build
+
+# Back to web tab - click "Reload"
+```
+
+## File Structure on PythonAnywhere
+
+```
+~/die-compare/
+├── backend/
+│   ├── main.py
+│   ├── scraper.py
+│   ├── requirements.txt
+│   └── die_compare.db
+├── frontend/
+│   ├── dist/          (built files)
+│   ├── src/
+│   └── package.json
+└── README.md
+```
 
 ## Troubleshooting
 
-- **CORS errors**: Make sure `FRONTEND_URL` env var is set correctly on Render
-- **Blank frontend**: Check that `VITE_API_URL` is set and backend is running
-- **Database not persisting**: Render's free tier uses ephemeral storage. Data resets on redeploy. For persistence, upgrade or use a database service.
+**"ModuleNotFoundError: No module named 'sqlalchemy'"**
+- Make sure you activated virtualenv: `workon diecompare`
+- Reinstall requirements: `pip install -r backend/requirements.txt`
 
-## Notes
+**Frontend shows blank page**
+- Make sure `npm run build` completed successfully
+- Check static files path in Web tab matches `frontend/dist`
+- Click "Reload" web app
 
-- Render free tier spins down after 15 minutes of inactivity (first request takes 30 seconds)
-- Database is stored locally on the free tier (will reset on redeployment)
-- For production, consider upgrading or adding a managed database
+**API returns 404**
+- Make sure WSGI file is correct
+- Check that virtualenv is activated in WSGI file
+- Click "Reload" web app
+
+**Import button doesn't work**
+- Check web app logs (Web tab → "Error log")
+- Make sure backend is running (visit `/docs` first)
+
+## Free Tier Limits
+
+- ✅ 100MB storage (plenty for this app)
+- ✅ 512MB RAM
+- ✅ Full Python support
+- ✅ 1 web app
+- ⚠️ **10-minute inactivity timeout** (app goes to sleep, first request takes 30 seconds)
+
+**Upgrade to paid** (~$5/month) to:
+- Always-on app (no timeout)
+- Unlimited web apps
+- 1GB storage
+
+## Next Steps
+
+Once deployed, you could:
+1. Add more public die data to the scraper
+2. Add user authentication for private entries
+3. Add export/import features
+4. Add advanced filtering/search
+5. Create a public leaderboard
+
+Enjoy your app! 🚀
