@@ -21,13 +21,16 @@ function App() {
       try {
         setLoading(true)
         
+        // Get base path for GitHub Pages
+        const basePath = import.meta.env.BASE_URL || '/'
+        
         // Load public dies
-        const publicRes = await fetch('/public-dies.json')
+        const publicRes = await fetch(`${basePath}public-dies.json`)
         const publicData = await publicRes.json()
         setPublicDies(publicData)
         
         // Load user dies (with encryption support)
-        const userRes = await fetch('/user-dies.json')
+        const userRes = await fetch(`${basePath}user-dies.json`)
         const userData = await userRes.json()
         
         // Check if there are any encrypted entries (indicates password protection)
@@ -67,7 +70,8 @@ function App() {
     
     // Reload and decrypt
     try {
-      const userRes = await fetch('/user-dies.json')
+      const basePath = import.meta.env.BASE_URL || '/'
+      const userRes = await fetch(`${basePath}user-dies.json`)
       const userData = await userRes.json()
       
       const decryptedData = userData.map(entry => {
