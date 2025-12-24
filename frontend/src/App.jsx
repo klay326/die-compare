@@ -186,21 +186,21 @@ function App() {
         <DieForm onAdd={handleAddDie} onCancel={() => setShowForm(false)} />
       )}
 
-      {compareMode ? (
+      {compareMode && (
         <ComparisonView 
           dies={filteredDies} 
           selectedDies={selectedDies} 
           onToggleSelect={handleToggleCompare}
         />
-      ) : (
-        <div className="dies-section">
-          <h2>Entries ({filteredDies.length})</h2>
-          {isLoggedIn && privateDies.length > 0 && (
-            <p style={{ fontSize: '0.9em', color: '#666' }}>Showing {publicDies.length} public + {privateDies.length} private entries</p>
-          )}
-          <DieList dies={filteredDies} onDelete={handleDeleteDie} onCompare={handleToggleCompare} compareMode={false} />
-        </div>
       )}
+
+      <div className="dies-section">
+        <h2>Entries ({filteredDies.length}) {compareMode && `- ${selectedDies.length} selected`}</h2>
+        {isLoggedIn && privateDies.length > 0 && (
+          <p style={{ fontSize: '0.9em', color: '#666' }}>Showing {publicDies.length} public + {privateDies.length} private entries</p>
+        )}
+        <DieList dies={filteredDies} onDelete={handleDeleteDie} onCompare={handleToggleCompare} compareMode={compareMode} />
+      </div>
 
       <footer className="footer">
         <p>Public data visible to all. Employee login required for private entries.</p>
