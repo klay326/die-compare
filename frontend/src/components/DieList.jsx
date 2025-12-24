@@ -42,7 +42,7 @@ export default function DieList({ dies, onDelete, onCompare, compareMode }) {
               <td className="die-size">
                 <strong>{die.die_size_mm2.toFixed(1)}</strong>
               </td>
-              <td>{die.transistor_count || '—'}</td>
+              <td>{die.transistor_count ? `${(die.transistor_count / 1e9).toFixed(1)}B` : '—'}</td>
               <td>
                 <span className={`category-badge ${die.category.toLowerCase()}`}>
                   {die.category}

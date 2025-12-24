@@ -4,6 +4,7 @@ import DieList from './components/DieList'
 import DieForm from './components/DieForm'
 import Stats from './components/Stats'
 import ComparisonView from './components/ComparisonView'
+import UserManager from './components/UserManager'
 
 function App() {
   const [publicDies, setPublicDies] = useState([])
@@ -13,6 +14,7 @@ function App() {
   const [filter, setFilter] = useState({ category: '', showPrivate: false })
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const [showUserManager, setShowUserManager] = useState(false)
   const [compareMode, setCompareMode] = useState(false)
   const [selectedDies, setSelectedDies] = useState([])
 
@@ -82,8 +84,14 @@ function App() {
   }
 
   const handleLogin = (username, password) => {
-    // Simple hardcoded auth - replace with your actual credentials
-    if (username === 'admin' && password === 'changeme') {
+    // Check localStorage for employees first
+    const savedEmployees = localStorage.getItem('employees')
+    const employees = savedEmployees ? JSON.parse(savedEmployees) : [
+      { username: 'admin', password: 'changeme', name: 'Administrator' }
+    ]
+
+    const user = employees.find(u => u.username === username && u.password === password)
+    if (user) {
       setIsLoggedIn(true)
       setShowLoginDialog(false)
     } else {
@@ -114,6 +122,10 @@ function App() {
         <LoginDialog onLogin={handleLogin} onClose={() => setShowLoginDialog(false)} />
       )}
 
+      {showUserManager && (
+        <UserManager onClose={() => setShowUserManager(false)} />
+      )}
+
       <Stats dies={filteredDies} />
 
       <div className="controls">
@@ -133,9 +145,14 @@ function App() {
             </button>
           )}
           {isLoggedIn && (
-            <button onClick={() => { setIsLoggedIn(false); setCompareMode(false); setSelectedDies([]) }} style={{ backgroundColor: '#d33' }}>
-              🚪 Logout
-            </button>
+            <>
+              <button onClick={() => setShowUserManager(true)} style={{ backgroundColor: '#06b6d4' }}>
+                👥 Manage Employees
+              </button>
+              <button onClick={() => { setIsLoggedIn(false); setCompareMode(false); setSelectedDies([]) }} style={{ backgroundColor: '#d33' }}>
+                🚪 Logout
+              </button>
+            </>
           )}
           <button onClick={() => setShowForm(!showForm)}>
             {showForm ? '✕ Cancel' : '+ Add Entry'}
