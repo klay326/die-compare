@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react'
+import CryptoJS from 'crypto-js'
 import './App.css'
 import DieList from './components/DieList'
 import DieForm from './components/DieForm'
 import Stats from './components/Stats'
 import ComparisonView from './components/ComparisonView'
 import UserManager from './components/UserManager'
+
+const SECRET_KEY = 'die-compare-secret-key'
+
+function hashPassword(password) {
+  return CryptoJS.SHA256(password + SECRET_KEY).toString()
+}
 
 function App() {
   const [publicDies, setPublicDies] = useState([])
@@ -87,10 +94,10 @@ function App() {
     // Check localStorage for employees first
     const savedEmployees = localStorage.getItem('employees')
     const employees = savedEmployees ? JSON.parse(savedEmployees) : [
-      { username: 'admin', password: 'changeme', name: 'Administrator' }
+      { username: 'admin', passwordHash: hashPassword('changeme'), name: 'Administrator' }
     ]
 
-    const user = employees.find(u => u.username === username && u.password === password)
+    const user = employees.find(u => u.username === username && u.passwordHash === hashPassword(password))
     if (user) {
       setIsLoggedIn(true)
       setShowLoginDialog(false)

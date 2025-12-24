@@ -1,4 +1,15 @@
 import { useState } from 'react'
+import CryptoJS from 'crypto-js'
+
+const SECRET_KEY = 'die-compare-secret-key' // In production, use environment variable
+
+function hashPassword(password) {
+  return CryptoJS.SHA256(password + SECRET_KEY).toString()
+}
+
+function verifyPassword(password, hash) {
+  return hashPassword(password) === hash
+}
 
 export default function UserManager({ onClose }) {
   const [users, setUsers] = useState(() => {
@@ -32,7 +43,7 @@ export default function UserManager({ onClose }) {
     const newUser = {
       id: `user-${Date.now()}`,
       username,
-      password,
+      passwordHash: hashPassword(password),
       name: name || username,
       createdAt: new Date().toISOString()
     }

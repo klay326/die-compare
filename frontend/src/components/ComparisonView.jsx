@@ -1,6 +1,9 @@
 import './ComparisonView.css'
+import { useState } from 'react'
 
 export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
+  const [hoveredId, setHoveredId] = useState(null)
+
   const handleClearSelection = () => {
     selectedDies.forEach(die => onToggleSelect(die))
   }
@@ -115,6 +118,7 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px' }}>
           {dies.map(die => {
             const isSelected = selectedDies.find(s => s.id === die.id)
+            const isHovered = hoveredId === die.id
             return (
               <div 
                 key={die.id} 
@@ -125,14 +129,14 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
                   borderRadius: '8px',
                   cursor: 'pointer',
                   textAlign: 'center',
-                  transition: 'all 0.3s',
+                  transition: 'all 0.2s ease',
                   boxShadow: isSelected ? '0 4px 12px rgba(79, 70, 229, 0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
-                  transform: isSelected ? 'scale(1.02)' : 'scale(1)'
+                  transform: isSelected ? 'scale(1.02)' : isHovered ? 'translateY(-4px)' : 'scale(1)'
                 }}
-                onMouseEnter={(e) => !isSelected && (e.currentTarget.style.transform = 'translateY(-4px)')}
-                onMouseLeave={(e) => !isSelected && (e.currentTarget.style.transform = 'translateY(0)')}
+                onMouseEnter={() => setHoveredId(die.id)}
+                onMouseLeave={() => setHoveredId(null)}
                 onClick={() => {
-                  console.log(isSelected ? 'Removing:' : 'Adding:', die.chip_name)
+                  console.log(isSelected ? 'Removing:' : 'Adding:', die.chip_name, '| Total selected:', selectedDies.length + (isSelected ? -1 : 1))
                   onToggleSelect(die)
                 }}
               >
