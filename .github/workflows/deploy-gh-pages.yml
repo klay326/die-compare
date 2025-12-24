@@ -1,29 +1,11 @@
-name: Deploy to GitHub Pages
+name: Manual build reminder
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build:
+  note:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install and build
-        run: cd frontend && npm install && npm run build
-
-      - name: Commit and push docs
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add docs -f
-          git commit -m "Build: Update docs folder" || true
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo "GitHub Pages is serving from /docs folder. Run 'npm run build' locally to update."
