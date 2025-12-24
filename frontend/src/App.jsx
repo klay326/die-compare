@@ -143,7 +143,7 @@ function App() {
         <UserManager onClose={() => setShowUserManager(false)} />
       )}
 
-      <Stats dies={filteredDies} />
+      <Stats dies={visibleDies} />
 
       <div className="controls">
         <div className="filter-group">

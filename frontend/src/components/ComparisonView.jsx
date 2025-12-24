@@ -10,7 +10,15 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
 
   const sorted = selectedDies.length > 0 ? [...selectedDies].sort((a, b) => b.die_size_mm2 - a.die_size_mm2) : []
   const maxSize = sorted.length > 0 ? sorted[0].die_size_mm2 : 0
-  const scale = 300 / (maxSize || 1)
+  const scale = 500 / (maxSize || 1)
+  
+  // Better layout - grid positioning
+  const getCellPosition = (idx, total) => {
+    const cols = Math.ceil(Math.sqrt(total))
+    const row = Math.floor(idx / cols)
+    const col = idx % cols
+    return { x: 50 + col * 180, y: 50 + row * 200 }
+  }
 
   return (
     <div className="comparison-view">
@@ -23,8 +31,8 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
             </button>
           </div>
 
-          <div style={{ background: 'white', border: '2px solid #ddd', borderRadius: '8px', padding: '20px', marginBottom: '20px' }}>
-            <svg viewBox="0 0 600 400" style={{ width: '100%', height: 'auto', minHeight: '400px', background: '#fafafa', borderRadius: '4px' }}>
+          <div style={{ background: 'white', border: '2px solid #ddd', borderRadius: '8px', padding: '20px', marginBottom: '20px', overflowX: 'auto' }}>
+            <svg viewBox="0 0 1000 600" style={{ width: '100%', height: 'auto', minHeight: '600px', background: '#fafafa', borderRadius: '4px' }}>
               <defs>
                 <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
                   <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#eee" strokeWidth="1" />
@@ -35,44 +43,70 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
               {sorted.map((die, idx) => {
                 const width = Math.sqrt(die.die_size_mm2) * scale
                 const height = Math.sqrt(die.die_size_mm2) * scale
-                const startX = 50 + (idx * 120)
-                const startY = 50
+                const pos = getCellPosition(idx, sorted.length)
+                const startX = pos.x
+                const startY = pos.y
                 
-                const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
+                const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6']
                 const color = colors[idx % colors.length]
 
                 return (
-                  <g key={die.id}>
+                  <g key={die.id} onMouseEnter={() => setHoveredId(die.id)} onMouseLeave={() => setHoveredId(null)}>
                     <rect
                       x={startX}
                       y={startY}
                       width={width}
                       height={height}
                       fill={color}
-                      fillOpacity="0.7"
-                      stroke={color}
-                      strokeWidth="2"
+                      fillOpacity={hoveredId === die.id ? 0.9 : 0.7}
+                      stroke={hoveredId === die.id ? '#000' : color}
+                      strokeWidth={hoveredId === die.id ? 3 : 2}
+                      rx="4"
+                      style={{ transition: 'all 0.2s ease' }}
                     />
                     <text
                       x={startX + width / 2}
-                      y={startY + height / 2}
+                      y={startY + height / 2 - 8}
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="white"
-                      fontSize="12"
+                      fontSize="13"
                       fontWeight="bold"
                       pointerEvents="none"
                     >
-                      {die.die_size_mm2}mm²
+                      {die.die_size_mm2}
                     </text>
                     <text
                       x={startX + width / 2}
-                      y={startY + height + 20}
+                      y={startY + height / 2 + 8}
                       textAnchor="middle"
-                      fontSize="11"
+                      dominantBaseline="middle"
+                      fill="white"
+                      fontSize="10"
                       pointerEvents="none"
                     >
-                      {die.chip_name}
+                      mm²
+                    </text>
+                    <text
+                      x={startX + width / 2}
+                      y={startY + height + 18}
+                      textAnchor="middle"
+                      fontSize="12"
+                      fontWeight="600"
+                      pointerEvents="none"
+                      fill="#1f2937"
+                    >
+                      {die.chip_name.length > 15 ? die.chip_name.substring(0, 12) + '...' : die.chip_name}
+                    </text>
+                    <text
+                      x={startX + width / 2}
+                      y={startY + height + 35}
+                      textAnchor="middle"
+                      fontSize="10"
+                      pointerEvents="none"
+                      fill="#6b7280"
+                    >
+                      {die.manufacturer}
                     </text>
                   </g>
                 )
