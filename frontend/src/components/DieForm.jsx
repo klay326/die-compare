@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './DieForm.css'
 
-export default function DieForm({ onSubmit, onCancel }) {
+export default function DieForm({ onAdd, onCancel }) {
   const [formData, setFormData] = useState({
     chip_name: '',
     manufacturer: '',
@@ -11,14 +11,14 @@ export default function DieForm({ onSubmit, onCancel }) {
     release_date: '',
     category: 'SoC',
     notes: '',
-    is_public: 1
+    is_public: true
   })
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? (checked ? 1 : 0) : value
+      [name]: type === 'checkbox' ? checked : value
     })
   }
 
@@ -30,9 +30,10 @@ export default function DieForm({ onSubmit, onCancel }) {
       return
     }
 
-    onSubmit({
+    onAdd({
       ...formData,
-      die_size_mm2: parseFloat(formData.die_size_mm2)
+      die_size_mm2: parseFloat(formData.die_size_mm2),
+      transistor_count: formData.transistor_count ? parseFloat(formData.transistor_count) : null
     })
   }
 
@@ -146,7 +147,7 @@ export default function DieForm({ onSubmit, onCancel }) {
               type="checkbox"
               id="is_public"
               name="is_public"
-              checked={formData.is_public === 1}
+              checked={formData.is_public}
               onChange={handleChange}
             />
             Public Entry

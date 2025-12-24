@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import CryptoJS from 'crypto-js'
 import './App.css'
 import DieList from './components/DieList'
 import DieForm from './components/DieForm'
@@ -7,71 +7,148 @@ import Stats from './components/Stats'
 
 function App() {
   const [dies, setDies] = useState([])
+  const [publicDies, setPublicDies] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [filter, setFilter] = useState({ category: '', isPublic: true })
-  const [importing, setImporting] = useState(false)
-  const [importMessage, setImportMessage] = useState('')
+  const [password, setPassword] = useState('')
+  const [isUnlocked, setIsUnlocked] = useState(false)
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false)
 
-  const fetchDies = async () => {
-    try {
-      setLoading(true)
-      const response = await axios.get('/api/dies', {
-        params: {
-          category: filter.category || undefined,
-          is_public: filter.isPublic ? 1 : 0
-        }
-      })
-      setDies(response.data)
-    } catch (error) {
-      console.error('Error fetching dies:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
+  // Load data from JSON files
   useEffect(() => {
-    fetchDies()
-  }, [filter])
-
-  const handleAddDie = async (dieData) => {
-    try {
-      await axios.post('/api/dies', dieData)
-      setShowForm(false)
-      fetchDies()
-    } catch (error) {
-      console.error('Error adding die:', error)
-      alert('Error adding die entry')
-    }
-  }
-
-  const handleDeleteDie = async (dieId) => {
-    if (window.confirm('Are you sure you want to delete this entry?')) {
+    const loadData = async () => {
       try {
-        await axios.delete(`/api/dies/${dieId}`)
-        fetchDies()
+        setLoading(true)
+        
+        // Load public dies
+        const publicRes = await fetch('/public-dies.json')
+        const publicData = await publicRes.json()
+        setPublicDies(publicData)
+        
+        // Load user dies (with encryption support)
+        const userRes = await fetch('/user-dies.json')
+        const userData = await userRes.json()
+        
+        // Check if there are any encrypted entries (indicates password protection)
+        const hasEncrypted = userData.some(entry => entry.encrypted)
+        if (hasEncrypted && !isUnlocked) {
+          setShowPasswordDialog(true)
+        } else {
+          // Decrypt entries if password exists
+          const decryptedData = userData.map(entry => {
+            if (entry.encrypted && isUnlocked && password) {
+              try {
+                const decrypted = CryptoJS.AES.decrypt(entry.encrypted, password).toString(CryptoJS.enc.Utf8)
+                return { ...entry, ...JSON.parse(decrypted) }
+              } catch (e) {
+                console.error('Decryption failed')
+                return entry
+              }
+            }
+            return entry
+          })
+          setDies(decryptedData)
+        }
       } catch (error) {
-        console.error('Error deleting die:', error)
-        alert('Error deleting die entry')
+        console.error('Error loading data:', error)
+      } finally {
+        setLoading(false)
       }
     }
+    
+    loadData()
+  }, [])
+
+  // Unlock with password
+  const handleUnlock = async (pwd) => {
+    setPassword(pwd)
+    setIsUnlocked(true)
+    
+    // Reload and decrypt
+    try {
+      const userRes = await fetch('/user-dies.json')
+      const userData = await userRes.json()
+      
+      const decryptedData = userData.map(entry => {
+        if (entry.encrypted) {
+          try {
+            const decrypted = CryptoJS.AES.decrypt(entry.encrypted, pwd).toString(CryptoJS.enc.Utf8)
+            return { ...entry, ...JSON.parse(decrypted) }
+          } catch (e) {
+            console.error('Decryption failed for entry:', entry.id)
+            return entry
+          }
+        }
+        return entry
+      })
+      setDies(decryptedData)
+      setShowPasswordDialog(false)
+    } catch (error) {
+      console.error('Error unlocking:', error)
+      alert('Incorrect password')
+      setIsUnlocked(false)
+      setPassword('')
+    }
   }
 
-  const handleImportPublicDies = async () => {
-    try {
-      setImporting(true)
-      setImportMessage('Importing public die data...')
-      const response = await axios.post('/api/import/public-dies')
-      setImportMessage(`✓ ${response.data.message}`)
-      fetchDies()
-      setTimeout(() => setImportMessage(''), 3000)
-    } catch (error) {
-      console.error('Error importing dies:', error)
-      setImportMessage('✗ Error importing die data')
-      setTimeout(() => setImportMessage(''), 3000)
-    } finally {
-      setImporting(false)
+  // Filter and combine dies
+  const filteredDies = dies.filter(die => {
+    const categoryMatch = !filter.category || die.category?.toLowerCase().includes(filter.category.toLowerCase())
+    const publicMatch = !filter.isPublic || die.is_public
+    return categoryMatch && publicMatch
+  })
+
+  // Add die (save to localStorage)
+  const handleAddDie = (dieData) => {
+    const newDie = {
+      id: `user-${Date.now()}`,
+      ...dieData,
+      created_at: new Date().toISOString()
     }
+    
+    // If private, encrypt it
+    let saveData = newDie
+    if (!dieData.is_public && password) {
+      const encrypted = CryptoJS.AES.encrypt(
+        JSON.stringify(newDie),
+        password
+      ).toString()
+      saveData = { id: newDie.id, encrypted, is_public: false }
+    }
+    
+    const updated = [...dies, newDie]
+    setDies(updated)
+    setShowForm(false)
+    
+    // Save to localStorage (in real use, user would download/commit to repo)
+    localStorage.setItem('user-dies', JSON.stringify(updated))
+    alert('Entry added! Remember to save changes to your repository.')
+  }
+
+  // Delete die
+  const handleDeleteDie = (dieId) => {
+    if (window.confirm('Delete this entry?')) {
+      const updated = dies.filter(d => d.id !== dieId)
+      setDies(updated)
+      localStorage.setItem('user-dies', JSON.stringify(updated))
+    }
+  }
+
+  // Export data for backup/commit
+  const handleExportDies = () => {
+    const dataStr = JSON.stringify(dies, null, 2)
+    const element = document.createElement('a')
+    element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(dataStr))
+    element.setAttribute('download', 'user-dies.json')
+    element.style.display = 'none'
+    document.body.appendChild(element)
+    element.click()
+    document.body.removeChild(element)
+  }
+
+  if (loading) {
+    return <div className="container"><p>Loading...</p></div>
   }
 
   return (
@@ -81,7 +158,11 @@ function App() {
         <p>Semiconductor Die Size Database & Comparison Tool</p>
       </header>
 
-      <Stats />
+      {showPasswordDialog && (
+        <PasswordDialog onUnlock={handleUnlock} />
+      )}
+
+      <Stats dies={filteredDies} />
 
       <div className="controls">
         <div className="filter-group">
@@ -100,37 +181,65 @@ function App() {
             Public Only
           </label>
         </div>
-        <div className="button-group">
-          <button 
-            className="btn-secondary" 
-            onClick={handleImportPublicDies}
-            disabled={importing}
-          >
-            {importing ? 'Importing...' : '📥 Import Public Data'}
+
+        <div className="action-buttons">
+          <button onClick={() => setShowForm(!showForm)}>
+            {showForm ? '✕ Cancel' : '+ Add Entry'}
           </button>
-          <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Cancel' : '+ Add Die Entry'}
+          <button onClick={handleExportDies} style={{ backgroundColor: '#666' }}>
+            📥 Export JSON
           </button>
+          {isUnlocked && (
+            <button onClick={() => { setIsUnlocked(false); setPassword('') }} style={{ backgroundColor: '#d33' }}>
+              🔒 Lock
+            </button>
+          )}
         </div>
       </div>
 
-      {importMessage && (
-        <div className="import-message">
-          {importMessage}
-        </div>
-      )}
-
       {showForm && (
-        <div className="form-container">
-          <DieForm onSubmit={handleAddDie} onCancel={() => setShowForm(false)} />
-        </div>
+        <DieForm onAdd={handleAddDie} onCancel={() => setShowForm(false)} />
       )}
 
-      {loading ? (
-        <div className="loading">Loading die data...</div>
-      ) : (
-        <DieList dies={dies} onDelete={handleDeleteDie} />
-      )}
+      <div className="dies-section">
+        <h2>Entries ({filteredDies.length})</h2>
+        <DieList dies={filteredDies} onDelete={handleDeleteDie} />
+      </div>
+
+      <footer className="footer">
+        <p>Static app - changes saved to browser. Export and commit to GitHub to persist.</p>
+      </footer>
+    </div>
+  )
+}
+
+function PasswordDialog({ onUnlock }) {
+  const [pwd, setPwd] = useState('')
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onUnlock(pwd)
+  }
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>🔐 Unlock Private Entries</h2>
+        <p>This database contains encrypted private entries.</p>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            placeholder="Enter password"
+            value={pwd}
+            onChange={(e) => setPwd(e.target.value)}
+            autoFocus
+          />
+          <button type="submit">Unlock</button>
+        </form>
+        <p style={{ fontSize: '0.9em', color: '#666' }}>
+          Leave blank to view public entries only
+        </p>
+      </div>
     </div>
   )
 }
