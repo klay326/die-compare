@@ -1,103 +1,73 @@
-# Deployment Guide - PythonAnywhere
+# Deployment
 
-This guide will help you deploy Die Compare to PythonAnywhere (free tier available).
+**Status**: ✅ Live at https://klay326.github.io/die-compare/
 
-## Why PythonAnywhere?
+## How It's Deployed
 
-- ✅ Designed for Python web apps (no version conflicts)
-- ✅ Free tier is generous for side projects
-- ✅ Super easy setup - just upload code
-- ✅ Built-in database support
-- ✅ Custom domain support
-- ✅ No Docker, no build nightmares
+This is a **static site** on GitHub Pages - no backend server needed.
 
-## Prerequisites
+### Architecture
+- **Frontend**: React app built to `/docs` folder (served by GitHub Pages)
+- **Data**: JSON files in `frontend/public/` (loaded by browser)
+- **Encryption**: Client-side AES for private entries
+- **Database**: None - uses browser localStorage + Git for persistence
 
-1. GitHub account (your repo is already there)
-2. PythonAnywhere account (free at https://www.pythonanywhere.com)
-3. Custom domain (optional, but recommended)
+### Why Static?
+- ✅ Free (GitHub Pages)
+- ✅ No server to maintain
+- ✅ No backend complexity
+- ✅ Private data encrypted client-side
+- ✅ Works offline (cached by browser)
 
-## Step-by-Step Deployment
+## Updating the App
 
-### Step 1: Sign Up for PythonAnywhere
-
-1. Go to https://www.pythonanywhere.com
-2. Click "Start running Python online"
-3. Sign up with email (or GitHub login)
-4. Choose the **Free** plan
-5. Verify email and complete setup
-
-### Step 2: Clone Your Repository
-
-1. In PythonAnywhere, click on **"Consoles"** tab at the top
-2. Start a **"Bash"** console
-3. Clone your repo:
+After code/data changes:
 
 ```bash
-cd ~
-git clone https://github.com/klay326/die-compare.git
-cd die-compare
+cd /Users/klay/Documents/Die\ Compare/frontend
+npm run build
+cd ..
+git add docs/
+git commit -m "Update: [describe changes]"
+git push origin main
 ```
 
-### Step 3: Set Up Python Virtual Environment
+GitHub Pages auto-deploys the `/docs` folder.
 
-In the same bash console:
+## Adding Die Data
 
-```bash
-mkvirtualenv --python=/usr/bin/python3.9 diecompare
-pip install -r backend/requirements.txt
-cd frontend && npm install && npm run build
+### Public Dies
+Edit `frontend/public/public-dies.json`:
+```json
+{
+  "chip_name": "Apple M5",
+  "manufacturer": "Apple",
+  "process_node": "3nm",
+  "die_size_mm2": 180,
+  "transistor_count": 25000000000,
+  "release_date": "2025-01",
+  "category": "SoC"
+}
 ```
 
-### Step 4: Create a Web App
+Rebuild and push.
 
-1. Go to **"Web"** tab
-2. Click **"Add a new web app"**
-3. Choose **"Python 3.9"**
-4. It will create a default app - we'll customize it
+### Private Dies
+1. Use the app UI: "+ Add Entry"
+2. Toggle "Public Entry" OFF
+3. Enter password when adding
+4. Click "📥 Export JSON" to backup
+5. Commit the exported file to persist
 
-### Step 5: Configure WSGI File
+## Tech Stack
+- React 18 + Vite
+- CryptoJS (AES encryption)
+- JSON data files
+- GitHub Pages (hosting)
+- No backend/database
 
-1. Click on your web app in the "Web" tab
-2. Under "Code" section, find **"WSGI configuration file"**
-3. Click the path (e.g., `/var/www/yourusername_pythonanywhere_com_wsgi.py`)
-4. Replace the entire content with:
-
-```python
-import sys
-import os
-
-# Add your project directory to the Python path
-project_dir = os.path.expanduser('~/die-compare')
-sys.path.insert(0, project_dir)
-
-# Activate virtual environment
-activate_this = os.path.expanduser('~/.virtualenvs/diecompare/bin/activate_this.py')
-with open(activate_this) as f:
-    exec(f.read(), {'__file__': activate_this})
-
-# Import and run FastAPI app
-from backend.main import app
-
-# WSGI application
-application = app
-```
-
-5. Click **"Save"**
-
-### Step 6: Configure Static Files (Frontend)
-
-Back in the **"Web"** tab, in the **"Static files"** section:
-
-1. Click **"Add a new static files entry"**
-2. Fill in:
-   - **URL**: `/`
-   - **Directory**: `/home/yourusername/die-compare/frontend/dist`
-3. Click **"Add"**
-
-### Step 7: Set Environment Variables
-
-In the **"Web"** tab, scroll down to **"Environment variables"**:
+## That's It!
+No PythonAnywhere, no Docker, no serverless complications. Just React + GitHub.
 
 1. Click **"Add a new variable"**
 2. Add:
