@@ -6,6 +6,8 @@ import DieForm from './components/DieForm'
 import Stats from './components/Stats'
 import ComparisonView from './components/ComparisonView'
 import UserManager from './components/UserManager'
+import { auth } from './firebase'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 
 const SECRET_KEY = 'die-compare-secret-key'
 
@@ -90,19 +92,27 @@ function App() {
     }
   }
 
-  const handleLogin = (username, password) => {
-    // Check localStorage for employees first
-    const savedEmployees = localStorage.getItem('employees')
-    const employees = savedEmployees ? JSON.parse(savedEmployees) : [
-      { username: 'admin', passwordHash: hashPassword('changeme'), name: 'Administrator' }
-    ]
-
-    const user = employees.find(u => u.username === username && u.passwordHash === hashPassword(password))
-    if (user) {
+  const handleLogin = async (username, password) => {
+    try {
+      // Firebase uses email as username, so we construct an email from username
+      const email = `${username}@diecompare.local`
+      
+      // Sign in with Firebase
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      
       setIsLoggedIn(true)
       setShowLoginDialog(false)
-    } else {
-      alert('Invalid credentials')
+    } catch (error) {
+      console.error('Login error:', error)
+      
+      // Provide user-friendly error messages
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        throw new Error('Invalid username or password')
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email format')
+      } else {
+        throw new Error(error.message || 'Authentication failed')
+      }
     }
   }
 
@@ -202,10 +212,20 @@ function App() {
 function LoginDialog({ onLogin, onClose }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    onLogin(username, password)
+    setError('')
+    try {
+      setLoading(true)
+      await onLogin(username, password)
+    } catch (err) {
+      setError(err.message || 'Login failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -219,15 +239,18 @@ function LoginDialog({ onLogin, onClose }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             autoFocus
+            disabled={loading}
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
-          <button type="submit">Login</button>
-          <button type="button" onClick={onClose}>Cancel</button>
+          {error && <div style={{ color: '#ef4444', marginBottom: '10px', fontSize: '0.9em' }}>⚠️ {error}</div>}
+          <button type="submit" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
+          <button type="button" onClick={onClose} disabled={loading}>Cancel</button>
         </form>
       </div>
     </div>
