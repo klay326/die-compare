@@ -139,7 +139,7 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
         </table>
       </div>
 
-      <div style={{ background: '#f9fafb', padding: '20px', borderRadius: '8px' }}>
+      <div style={{ background: '#f9fafb', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
         <h3 style={{ marginTop: 0, color: '#333' }}>Selected Dies:</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
           {sorted.map((die, idx) => (
@@ -163,6 +163,39 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
               <span style={{ color: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'][idx % 6] }}>●</span>
               {die.chip_name}
               <span style={{ color: '#ef4444', cursor: 'pointer', fontSize: '1.2em', marginLeft: '4px' }}>✕</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '2px solid #ddd' }}>
+        <h3 style={{ color: '#333', marginBottom: '15px' }}>📌 Add More Dies to Compare:</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
+          {dies.filter(die => !selectedDies.find(s => s.id === die.id)).map(die => (
+            <div 
+              key={die.id} 
+              style={{
+                padding: '12px',
+                background: 'white',
+                border: '2px solid #ddd',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                textAlign: 'center',
+                transition: 'all 0.3s',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.borderColor = '#4f46e5'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.borderColor = '#ddd'
+              }}
+              onClick={() => onToggleSelect(die)}
+            >
+              <div style={{ fontWeight: '600', fontSize: '0.9em', marginBottom: '4px' }}>{die.chip_name}</div>
+              <div style={{ fontSize: '1.1em', color: '#ef4444', fontWeight: 'bold' }}>{die.die_size_mm2} mm²</div>
             </div>
           ))}
         </div>
