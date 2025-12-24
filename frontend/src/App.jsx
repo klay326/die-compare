@@ -37,6 +37,8 @@ function App() {
         const hasEncrypted = userData.some(entry => entry.encrypted)
         if (hasEncrypted && !isUnlocked) {
           setShowPasswordDialog(true)
+          // Still set public dies for viewing
+          setDies(publicData)
         } else {
           // Decrypt entries if password exists
           const decryptedData = userData.map(entry => {
@@ -51,7 +53,8 @@ function App() {
             }
             return entry
           })
-          setDies(decryptedData)
+          // Combine public and user dies
+          setDies([...publicData, ...decryptedData])
         }
       } catch (error) {
         console.error('Error loading data:', error)
@@ -71,6 +74,9 @@ function App() {
     // Reload and decrypt
     try {
       const basePath = import.meta.env.BASE_URL || '/'
+      const publicRes = await fetch(`${basePath}public-dies.json`)
+      const publicData = await publicRes.json()
+      
       const userRes = await fetch(`${basePath}user-dies.json`)
       const userData = await userRes.json()
       
@@ -86,7 +92,8 @@ function App() {
         }
         return entry
       })
-      setDies(decryptedData)
+      // Combine public and user dies
+      setDies([...publicData, ...decryptedData])
       setShowPasswordDialog(false)
     } catch (error) {
       console.error('Error unlocking:', error)
