@@ -1,5 +1,295 @@
 [
   {
+    "chip_name": "Intel 8086",
+    "manufacturer": "Intel",
+    "process_node": "10µm",
+    "die_size_mm2": 46.6,
+    "transistor_count": 29000,
+    "release_date": "1978-06",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel 80386",
+    "manufacturer": "Intel",
+    "process_node": "1µm",
+    "die_size_mm2": 103,
+    "transistor_count": 275000,
+    "release_date": "1985-10",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Pentium",
+    "manufacturer": "Intel",
+    "process_node": "0.8µm",
+    "die_size_mm2": 150,
+    "transistor_count": 3100000,
+    "release_date": "1993-03",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Pentium Pro",
+    "manufacturer": "Intel",
+    "process_node": "0.6µm",
+    "die_size_mm2": 306,
+    "transistor_count": 5500000,
+    "release_date": "1995-11",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Pentium 4 (Willamette)",
+    "manufacturer": "Intel",
+    "process_node": "180nm",
+    "die_size_mm2": 217,
+    "transistor_count": 42000000,
+    "release_date": "2000-11",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Core 2 Duo",
+    "manufacturer": "Intel",
+    "process_node": "65nm",
+    "die_size_mm2": 143,
+    "transistor_count": 291000000,
+    "release_date": "2006-07",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Core i7-980X",
+    "manufacturer": "Intel",
+    "process_node": "32nm",
+    "die_size_mm2": 248,
+    "transistor_count": 1570000000,
+    "release_date": "2010-03",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Core i7-6700K",
+    "manufacturer": "Intel",
+    "process_node": "14nm",
+    "die_size_mm2": 179,
+    "transistor_count": 1750000000,
+    "release_date": "2015-08",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Core i9-9900K",
+    "manufacturer": "Intel",
+    "process_node": "14nm",
+    "die_size_mm2": 157,
+    "transistor_count": 3070000000,
+    "release_date": "2018-10",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Core i9-13900K",
+    "manufacturer": "Intel",
+    "process_node": "10nm",
+    "die_size_mm2": 253,
+    "transistor_count": 14000000000,
+    "release_date": "2022-10",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Intel Core i9-14900K",
+    "manufacturer": "Intel",
+    "process_node": "7nm (Intel 4)",
+    "die_size_mm2": 320,
+    "transistor_count": 24000000000,
+    "release_date": "2024-01",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "AMD Ryzen 3000 (Zen 2)",
+    "manufacturer": "AMD",
+    "process_node": "7nm",
+    "die_size_mm2": 82,
+    "transistor_count": 3950000000,
+    "release_date": "2019-07",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "AMD Ryzen 5000 (Zen 3)",
+    "manufacturer": "AMD",
+    "process_node": "7nm",
+    "die_size_mm2": 82,
+    "transistor_count": 4700000000,
+    "release_date": "2020-11",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "AMD Ryzen 7 7700X",
+    "manufacturer": "AMD",
+    "process_node": "5nm",
+    "die_size_mm2": 104,
+    "transistor_count": 10000000000,
+    "release_date": "2022-04",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "AMD Ryzen 9 7950X",
+    "manufacturer": "AMD",
+    "process_node": "5nm",
+    "die_size_mm2": 162,
+    "transistor_count": 10000000000,
+    "release_date": "2022-09",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "AMD Ryzen 9 9950X",
+    "manufacturer": "AMD",
+    "process_node": "5nm",
+    "die_size_mm2": 170,
+    "transistor_count": 12000000000,
+    "release_date": "2024-07",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "NVIDIA GeForce GTX 480",
+    "manufacturer": "NVIDIA",
+    "process_node": "40nm",
+    "die_size_mm2": 529,
+    "transistor_count": 3000000000,
+    "release_date": "2010-03",
+    "category": "GPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "NVIDIA GeForce GTX Titan",
+    "manufacturer": "NVIDIA",
+    "process_node": "28nm",
+    "die_size_mm2": 561,
+    "transistor_count": 7080000000,
+    "release_date": "2013-02",
+    "category": "GPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "NVIDIA GeForce RTX 2080 Ti",
+    "manufacturer": "NVIDIA",
+    "process_node": "12nm",
+    "die_size_mm2": 545,
+    "transistor_count": 18600000000,
+    "release_date": "2018-09",
+    "category": "GPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "NVIDIA RTX 3090",
+    "manufacturer": "NVIDIA",
+    "process_node": "8nm",
+    "die_size_mm2": 628,
+    "transistor_count": 28000000000,
+    "release_date": "2020-09",
+    "category": "GPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "NVIDIA RTX 4090",
+    "manufacturer": "NVIDIA",
+    "process_node": "5nm",
+    "die_size_mm2": 608,
+    "transistor_count": 55000000000,
+    "release_date": "2022-10",
+    "category": "GPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "NVIDIA H100",
+    "manufacturer": "NVIDIA",
+    "process_node": "5nm",
+    "die_size_mm2": 814,
+    "transistor_count": 80000000000,
+    "release_date": "2022-03",
+    "category": "GPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "NVIDIA L40S",
+    "manufacturer": "NVIDIA",
+    "process_node": "5nm",
+    "die_size_mm2": 558,
+    "transistor_count": 46200000000,
+    "release_date": "2023-01",
+    "category": "GPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "Apple A4",
+    "manufacturer": "Apple",
+    "process_node": "45nm",
+    "die_size_mm2": 91,
+    "transistor_count": 233000000,
+    "release_date": "2010-04",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Apple A8",
+    "manufacturer": "Apple",
+    "process_node": "20nm",
+    "die_size_mm2": 89,
+    "transistor_count": 2000000000,
+    "release_date": "2014-09",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Apple A12 Bionic",
+    "manufacturer": "Apple",
+    "process_node": "7nm",
+    "die_size_mm2": 82,
+    "transistor_count": 6900000000,
+    "release_date": "2018-09",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Apple A14 Bionic",
+    "manufacturer": "Apple",
+    "process_node": "5nm",
+    "die_size_mm2": 119,
+    "transistor_count": 11800000000,
+    "release_date": "2020-10",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Apple M1",
+    "manufacturer": "Apple",
+    "process_node": "5nm",
+    "die_size_mm2": 119,
+    "transistor_count": 16000000000,
+    "release_date": "2020-11",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Apple M2",
+    "manufacturer": "Apple",
+    "process_node": "5nm",
+    "die_size_mm2": 155,
+    "transistor_count": 20000000000,
+    "release_date": "2022-06",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
     "chip_name": "Apple M3 Pro",
     "manufacturer": "Apple",
     "process_node": "5nm",
@@ -30,17 +320,47 @@
     "is_public": true
   },
   {
-    "chip_name": "Snapdragon 8 Gen 3",
+    "chip_name": "Qualcomm Snapdragon 800",
     "manufacturer": "Qualcomm",
-    "process_node": "4nm",
-    "die_size_mm2": 85,
-    "transistor_count": 8000000000,
-    "release_date": "2023-10",
+    "process_node": "28nm",
+    "die_size_mm2": 102,
+    "transistor_count": 3500000000,
+    "release_date": "2013-01",
     "category": "SoC",
     "is_public": true
   },
   {
-    "chip_name": "Snapdragon 8 Gen 2",
+    "chip_name": "Qualcomm Snapdragon 810",
+    "manufacturer": "Qualcomm",
+    "process_node": "20nm",
+    "die_size_mm2": 130,
+    "transistor_count": 5000000000,
+    "release_date": "2014-09",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Qualcomm Snapdragon 845",
+    "manufacturer": "Qualcomm",
+    "process_node": "10nm",
+    "die_size_mm2": 100,
+    "transistor_count": 10000000000,
+    "release_date": "2017-12",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Qualcomm Snapdragon 8 Gen 1",
+    "manufacturer": "Qualcomm",
+    "process_node": "5nm",
+    "die_size_mm2": 95,
+    "transistor_count": 8000000000,
+    "release_date": "2021-11",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Qualcomm Snapdragon 8 Gen 2",
     "manufacturer": "Qualcomm",
     "process_node": "4nm",
     "die_size_mm2": 90,
@@ -50,7 +370,37 @@
     "is_public": true
   },
   {
-    "chip_name": "Exynos 2400",
+    "chip_name": "Qualcomm Snapdragon 8 Gen 3",
+    "manufacturer": "Qualcomm",
+    "process_node": "4nm",
+    "die_size_mm2": 85,
+    "transistor_count": 8000000000,
+    "release_date": "2023-10",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Samsung Exynos 9810",
+    "manufacturer": "Samsung",
+    "process_node": "10nm",
+    "die_size_mm2": 102,
+    "transistor_count": 7000000000,
+    "release_date": "2017-12",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Samsung Exynos 2100",
+    "manufacturer": "Samsung",
+    "process_node": "5nm",
+    "die_size_mm2": 135,
+    "transistor_count": 11300000000,
+    "release_date": "2021-01",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Samsung Exynos 2400",
     "manufacturer": "Samsung",
     "process_node": "4nm",
     "die_size_mm2": 110,
@@ -60,7 +410,27 @@
     "is_public": true
   },
   {
-    "chip_name": "Dimensity 9300",
+    "chip_name": "MediaTek Dimensity 1000",
+    "manufacturer": "MediaTek",
+    "process_node": "7nm",
+    "die_size_mm2": 88,
+    "transistor_count": 8000000000,
+    "release_date": "2020-01",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "MediaTek Dimensity 8200",
+    "manufacturer": "MediaTek",
+    "process_node": "5nm",
+    "die_size_mm2": 80,
+    "transistor_count": 9000000000,
+    "release_date": "2022-12",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "MediaTek Dimensity 9300",
     "manufacturer": "MediaTek",
     "process_node": "4nm",
     "die_size_mm2": 100,
@@ -70,61 +440,51 @@
     "is_public": true
   },
   {
-    "chip_name": "RTX 4090",
-    "manufacturer": "NVIDIA",
+    "chip_name": "Google Tensor",
+    "manufacturer": "Google/Samsung",
     "process_node": "5nm",
-    "die_size_mm2": 608,
-    "transistor_count": 55000000000,
-    "release_date": "2022-10",
-    "category": "GPU",
-    "is_public": true
-  },
-  {
-    "chip_name": "H100",
-    "manufacturer": "NVIDIA",
-    "process_node": "5nm",
-    "die_size_mm2": 814,
-    "transistor_count": 80000000000,
-    "release_date": "2022-03",
-    "category": "GPU",
-    "is_public": true
-  },
-  {
-    "chip_name": "Core i9-14900K",
-    "manufacturer": "Intel",
-    "process_node": "7nm (Intel 4)",
-    "die_size_mm2": 320,
-    "transistor_count": 24000000000,
-    "release_date": "2024-01",
-    "category": "CPU",
-    "is_public": true
-  },
-  {
-    "chip_name": "Core i9-13900K",
-    "manufacturer": "Intel",
-    "process_node": "10nm",
-    "die_size_mm2": 253,
-    "transistor_count": 14000000000,
-    "release_date": "2022-10",
-    "category": "CPU",
-    "is_public": true
-  },
-  {
-    "chip_name": "Ryzen 9 9950X",
-    "manufacturer": "AMD",
-    "process_node": "5nm",
-    "die_size_mm2": 170,
-    "transistor_count": 12000000000,
-    "release_date": "2024-07",
-    "category": "CPU",
-    "is_public": true
-  },
-  {
-    "chip_name": "Ryzen 7 7700X",
-    "manufacturer": "AMD",
-    "process_node": "5nm",
-    "die_size_mm2": 104,
+    "die_size_mm2": 140,
     "transistor_count": 10000000000,
+    "release_date": "2021-10",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Google Tensor 2",
+    "manufacturer": "Google/Samsung",
+    "process_node": "5nm",
+    "die_size_mm2": 140,
+    "transistor_count": 10000000000,
+    "release_date": "2022-10",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "Google Tensor 3",
+    "manufacturer": "Google/TSMC",
+    "process_node": "4nm",
+    "die_size_mm2": 130,
+    "transistor_count": 12000000000,
+    "release_date": "2023-10",
+    "category": "SoC",
+    "is_public": true
+  },
+  {
+    "chip_name": "ARM Cortex-X1",
+    "manufacturer": "ARM",
+    "process_node": "7nm",
+    "die_size_mm2": 40,
+    "transistor_count": 1000000000,
+    "release_date": "2020-05",
+    "category": "CPU",
+    "is_public": true
+  },
+  {
+    "chip_name": "ARM Cortex-X3",
+    "manufacturer": "ARM",
+    "process_node": "4nm",
+    "die_size_mm2": 35,
+    "transistor_count": 1500000000,
     "release_date": "2022-04",
     "category": "CPU",
     "is_public": true
