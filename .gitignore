@@ -8,9 +8,9 @@ env/
 .venv
 venv/
 ENV/
-build/
+builds/
 develop-eggs/
-dist/
+# dist/  # Allow frontend/dist to be committed for GitHub Pages
 downloads/
 eggs/
 .eggs/
