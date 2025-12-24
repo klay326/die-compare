@@ -1,11 +1,15 @@
 import './ComparisonView.css'
 
 export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
+  const handleClearSelection = () => {
+    selectedDies.forEach(die => onToggleSelect(die))
+  }
+
   if (selectedDies.length === 0) {
     return (
       <div className="comparison-view">
         <p style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-          Click on entries to compare them side-by-side
+          👇 Click on entries below to compare them side-by-side
         </p>
         <div className="dies-grid">
           {dies.map(die => (
@@ -13,6 +17,7 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
               key={die.id} 
               className="die-card selectable"
               onClick={() => onToggleSelect(die)}
+              title="Click to select for comparison"
             >
               <div className="die-name">{die.chip_name}</div>
               <div className="die-size">{die.die_size_mm2} mm²</div>
@@ -33,7 +38,7 @@ export default function ComparisonView({ dies, selectedDies, onToggleSelect }) {
     <div className="comparison-view">
       <div className="comparison-header">
         <h2>Comparing {sorted.length} Dies</h2>
-        <button onClick={() => onToggleSelect(null)} className="clear-btn">Clear Selection</button>
+        <button onClick={handleClearSelection} className="clear-btn">Clear All</button>
       </div>
 
       <div className="comparison-canvas">

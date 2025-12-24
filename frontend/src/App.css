@@ -23,23 +23,28 @@
 
 .controls {
   display: flex;
+  flex-direction: column;
   gap: 15px;
   margin-bottom: 30px;
-  flex-wrap: wrap;
-  align-items: center;
+  padding: 20px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
 }
 
 .filter-group {
   display: flex;
   gap: 10px;
-  flex: 1;
-  min-width: 300px;
+  width: 100%;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-.button-group {
+.action-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
 }
 
 .filter-group input[type="text"] {
