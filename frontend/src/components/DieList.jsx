@@ -1,6 +1,6 @@
 import './DieList.css'
 
-export default function DieList({ dies, onDelete }) {
+export default function DieList({ dies, onDelete, onCompare, compareMode }) {
   if (dies.length === 0) {
     return (
       <div className="empty-state">
@@ -14,6 +14,7 @@ export default function DieList({ dies, onDelete }) {
       <table className="dies-table">
         <thead>
           <tr>
+            {compareMode && <th>Select</th>}
             <th>Chip Name</th>
             <th>Manufacturer</th>
             <th>Process</th>
@@ -26,7 +27,15 @@ export default function DieList({ dies, onDelete }) {
         </thead>
         <tbody>
           {dies.map(die => (
-            <tr key={die.id}>
+            <tr key={die.id} className={compareMode ? 'selectable-row' : ''}>
+              {compareMode && (
+                <td>
+                  <input 
+                    type="checkbox" 
+                    onChange={() => onCompare && onCompare(die)}
+                  />
+                </td>
+              )}
               <td className="chip-name">{die.chip_name}</td>
               <td>{die.manufacturer}</td>
               <td>{die.process_node || '—'}</td>

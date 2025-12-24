@@ -1,0 +1,158 @@
+.comparison-view {
+  width: 100%;
+}
+
+.comparison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  padding: 10px;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.clear-btn {
+  padding: 8px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.clear-btn:hover {
+  background: #dc2626;
+}
+
+.comparison-canvas {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  margin: 20px 0;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.die-canvas {
+  width: 100%;
+  height: auto;
+  min-height: 400px;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.comparison-details {
+  margin: 30px 0;
+  overflow-x: auto;
+}
+
+.comparison-details table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.comparison-details thead {
+  background: #4f46e5;
+  color: white;
+}
+
+.comparison-details th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.comparison-details td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.comparison-details tbody tr:hover {
+  background: #f3f4f6;
+}
+
+.selection-list {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.die-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip:hover {
+  border-color: #4f46e5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 1.2em;
+  margin-left: 4px;
+}
+
+.dies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.die-card {
+  padding: 15px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.die-card.selectable:hover {
+  border-color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  transform: translateY(-2px);
+}
+
+.die-name {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.die-size {
+  font-size: 1.2em;
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.die-mfg {
+  font-size: 0.85em;
+  color: #666;
+  margin-top: 4px;
+}

@@ -1,14 +1,26 @@
 [
   {
-    "id": "public-1",
-    "chip_name": "Custom SoC A",
+    "id": "private-1",
+    "chip_name": "Company Chip A",
     "manufacturer": "Your Company",
     "process_node": "3nm",
-    "die_size_mm2": 150,
-    "transistor_count": 15000000000,
-    "release_date": "2024-06",
+    "die_size_mm2": 180,
+    "transistor_count": 20000000000,
+    "release_date": "2025-01",
     "category": "SoC",
-    "notes": "Internal reference design",
-    "is_public": true
+    "notes": "Internal design - confidential",
+    "is_public": false
+  },
+  {
+    "id": "private-2",
+    "chip_name": "Company GPU Prototype",
+    "manufacturer": "Your Company",
+    "process_node": "5nm",
+    "die_size_mm2": 500,
+    "transistor_count": 50000000000,
+    "release_date": "2025-02",
+    "category": "GPU",
+    "notes": "Next-gen GPU architecture",
+    "is_public": false
   }
 ]

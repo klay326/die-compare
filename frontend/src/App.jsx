@@ -1,61 +1,48 @@
 import { useState, useEffect } from 'react'
-import CryptoJS from 'crypto-js'
 import './App.css'
 import DieList from './components/DieList'
 import DieForm from './components/DieForm'
 import Stats from './components/Stats'
+import ComparisonView from './components/ComparisonView'
 
 function App() {
-  const [dies, setDies] = useState([])
   const [publicDies, setPublicDies] = useState([])
+  const [privateDies, setPrivateDies] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
-  const [filter, setFilter] = useState({ category: '', isPublic: true })
-  const [password, setPassword] = useState('')
-  const [isUnlocked, setIsUnlocked] = useState(false)
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false)
+  const [filter, setFilter] = useState({ category: '', showPrivate: false })
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const [compareMode, setCompareMode] = useState(false)
+  const [selectedDies, setSelectedDies] = useState([])
 
-  // Load data from JSON files
+  // Load data on mount
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true)
         
-        // Get base path for GitHub Pages
-        const basePath = import.meta.env.BASE_URL || '/'
-        
         // Load public dies
-        const publicRes = await fetch(`${basePath}public-dies.json`)
-        const publicData = await publicRes.json()
+        let publicRes, publicData
+        try {
+          publicRes = await fetch(`${import.meta.env.BASE_URL || '/'}public-dies.json`)
+          publicData = await publicRes.json()
+        } catch {
+          publicRes = await fetch('/public-dies.json')
+          publicData = await publicRes.json()
+        }
         setPublicDies(publicData)
         
-        // Load user dies (with encryption support)
-        const userRes = await fetch(`${basePath}user-dies.json`)
-        const userData = await userRes.json()
-        
-        // Check if there are any encrypted entries (indicates password protection)
-        const hasEncrypted = userData.some(entry => entry.encrypted)
-        if (hasEncrypted && !isUnlocked) {
-          setShowPasswordDialog(true)
-          // Still set public dies for viewing
-          setDies(publicData)
-        } else {
-          // Decrypt entries if password exists
-          const decryptedData = userData.map(entry => {
-            if (entry.encrypted && isUnlocked && password) {
-              try {
-                const decrypted = CryptoJS.AES.decrypt(entry.encrypted, password).toString(CryptoJS.enc.Utf8)
-                return { ...entry, ...JSON.parse(decrypted) }
-              } catch (e) {
-                console.error('Decryption failed')
-                return entry
-              }
-            }
-            return entry
-          })
-          // Combine public and user dies
-          setDies([...publicData, ...decryptedData])
+        // Load private dies
+        let privateRes, privateData
+        try {
+          privateRes = await fetch(`${import.meta.env.BASE_URL || '/'}user-dies.json`)
+          privateData = await privateRes.json()
+        } catch {
+          privateRes = await fetch('/user-dies.json')
+          privateData = await privateRes.json()
         }
+        setPrivateDies(privateData || [])
       } catch (error) {
         console.error('Error loading data:', error)
       } finally {
@@ -66,96 +53,50 @@ function App() {
     loadData()
   }, [])
 
-  // Unlock with password
-  const handleUnlock = async (pwd) => {
-    setPassword(pwd)
-    setIsUnlocked(true)
-    
-    // Reload and decrypt
-    try {
-      const basePath = import.meta.env.BASE_URL || '/'
-      const publicRes = await fetch(`${basePath}public-dies.json`)
-      const publicData = await publicRes.json()
-      
-      const userRes = await fetch(`${basePath}user-dies.json`)
-      const userData = await userRes.json()
-      
-      const decryptedData = userData.map(entry => {
-        if (entry.encrypted) {
-          try {
-            const decrypted = CryptoJS.AES.decrypt(entry.encrypted, pwd).toString(CryptoJS.enc.Utf8)
-            return { ...entry, ...JSON.parse(decrypted) }
-          } catch (e) {
-            console.error('Decryption failed for entry:', entry.id)
-            return entry
-          }
-        }
-        return entry
-      })
-      // Combine public and user dies
-      setDies([...publicData, ...decryptedData])
-      setShowPasswordDialog(false)
-    } catch (error) {
-      console.error('Error unlocking:', error)
-      alert('Incorrect password')
-      setIsUnlocked(false)
-      setPassword('')
-    }
-  }
+  // Get all visible dies based on login state
+  const visibleDies = isLoggedIn 
+    ? [...publicDies, ...privateDies]
+    : publicDies
 
-  // Filter and combine dies
-  const filteredDies = dies.filter(die => {
+  // Filter dies
+  const filteredDies = visibleDies.filter(die => {
     const categoryMatch = !filter.category || die.category?.toLowerCase().includes(filter.category.toLowerCase())
-    const publicMatch = !filter.isPublic || die.is_public
-    return categoryMatch && publicMatch
+    return categoryMatch
   })
 
-  // Add die (save to localStorage)
   const handleAddDie = (dieData) => {
     const newDie = {
-      id: `user-${Date.now()}`,
+      id: `custom-${Date.now()}`,
       ...dieData,
       created_at: new Date().toISOString()
     }
-    
-    // If private, encrypt it
-    let saveData = newDie
-    if (!dieData.is_public && password) {
-      const encrypted = CryptoJS.AES.encrypt(
-        JSON.stringify(newDie),
-        password
-      ).toString()
-      saveData = { id: newDie.id, encrypted, is_public: false }
-    }
-    
-    const updated = [...dies, newDie]
-    setDies(updated)
+    setPublicDies([...publicDies, newDie])
     setShowForm(false)
-    
-    // Save to localStorage (in real use, user would download/commit to repo)
-    localStorage.setItem('user-dies', JSON.stringify(updated))
-    alert('Entry added! Remember to save changes to your repository.')
+    alert('Entry added! Remember to export and commit to GitHub.')
   }
 
-  // Delete die
   const handleDeleteDie = (dieId) => {
     if (window.confirm('Delete this entry?')) {
-      const updated = dies.filter(d => d.id !== dieId)
-      setDies(updated)
-      localStorage.setItem('user-dies', JSON.stringify(updated))
+      setPublicDies(publicDies.filter(d => d.id !== dieId))
     }
   }
 
-  // Export data for backup/commit
-  const handleExportDies = () => {
-    const dataStr = JSON.stringify(dies, null, 2)
-    const element = document.createElement('a')
-    element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(dataStr))
-    element.setAttribute('download', 'user-dies.json')
-    element.style.display = 'none'
-    document.body.appendChild(element)
-    element.click()
-    document.body.removeChild(element)
+  const handleLogin = (username, password) => {
+    // Simple hardcoded auth - replace with your actual credentials
+    if (username === 'admin' && password === 'changeme') {
+      setIsLoggedIn(true)
+      setShowLoginDialog(false)
+    } else {
+      alert('Invalid credentials')
+    }
+  }
+
+  const handleToggleCompare = (die) => {
+    if (selectedDies.find(d => d.id === die.id)) {
+      setSelectedDies(selectedDies.filter(d => d.id !== die.id))
+    } else {
+      setSelectedDies([...selectedDies, die])
+    }
   }
 
   if (loading) {
@@ -169,8 +110,8 @@ function App() {
         <p>Semiconductor Die Size Database & Comparison Tool</p>
       </header>
 
-      {showPasswordDialog && (
-        <PasswordDialog onUnlock={handleUnlock} />
+      {showLoginDialog && (
+        <LoginDialog onLogin={handleLogin} onClose={() => setShowLoginDialog(false)} />
       )}
 
       <Stats dies={filteredDies} />
@@ -183,26 +124,25 @@ function App() {
             value={filter.category}
             onChange={(e) => setFilter({ ...filter, category: e.target.value })}
           />
-          <label>
-            <input
-              type="checkbox"
-              checked={filter.isPublic}
-              onChange={(e) => setFilter({ ...filter, isPublic: e.target.checked })}
-            />
-            Public Only
-          </label>
         </div>
 
         <div className="action-buttons">
+          {!isLoggedIn && (
+            <button onClick={() => setShowLoginDialog(true)} style={{ backgroundColor: '#2563eb' }}>
+              🔐 Employee Login
+            </button>
+          )}
+          {isLoggedIn && (
+            <button onClick={() => { setIsLoggedIn(false); setCompareMode(false); setSelectedDies([]) }} style={{ backgroundColor: '#d33' }}>
+              🚪 Logout
+            </button>
+          )}
           <button onClick={() => setShowForm(!showForm)}>
             {showForm ? '✕ Cancel' : '+ Add Entry'}
           </button>
-          <button onClick={handleExportDies} style={{ backgroundColor: '#666' }}>
-            📥 Export JSON
-          </button>
-          {isUnlocked && (
-            <button onClick={() => { setIsUnlocked(false); setPassword('') }} style={{ backgroundColor: '#d33' }}>
-              🔒 Lock
+          {filteredDies.length > 0 && (
+            <button onClick={() => setCompareMode(!compareMode)} style={{ backgroundColor: '#7c3aed' }}>
+              {compareMode ? '📊 List View' : '📊 Compare'}
             </button>
           )}
         </div>
@@ -212,44 +152,59 @@ function App() {
         <DieForm onAdd={handleAddDie} onCancel={() => setShowForm(false)} />
       )}
 
-      <div className="dies-section">
-        <h2>Entries ({filteredDies.length})</h2>
-        <DieList dies={filteredDies} onDelete={handleDeleteDie} />
-      </div>
+      {compareMode ? (
+        <ComparisonView 
+          dies={filteredDies} 
+          selectedDies={selectedDies} 
+          onToggleSelect={handleToggleCompare}
+        />
+      ) : (
+        <div className="dies-section">
+          <h2>Entries ({filteredDies.length})</h2>
+          {isLoggedIn && privateDies.length > 0 && (
+            <p style={{ fontSize: '0.9em', color: '#666' }}>Showing {publicDies.length} public + {privateDies.length} private entries</p>
+          )}
+          <DieList dies={filteredDies} onDelete={handleDeleteDie} onCompare={handleToggleCompare} compareMode={false} />
+        </div>
+      )}
 
       <footer className="footer">
-        <p>Static app - changes saved to browser. Export and commit to GitHub to persist.</p>
+        <p>Public data visible to all. Employee login required for private entries.</p>
       </footer>
     </div>
   )
 }
 
-function PasswordDialog({ onUnlock }) {
-  const [pwd, setPwd] = useState('')
+function LoginDialog({ onLogin, onClose }) {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onUnlock(pwd)
+    onLogin(username, password)
   }
 
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h2>🔐 Unlock Private Entries</h2>
-        <p>This database contains encrypted private entries.</p>
+        <h2>🔐 Employee Login</h2>
         <form onSubmit={handleSubmit}>
           <input
-            type="password"
-            placeholder="Enter password"
-            value={pwd}
-            onChange={(e) => setPwd(e.target.value)}
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             autoFocus
           />
-          <button type="submit">Unlock</button>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">Login</button>
+          <button type="button" onClick={onClose}>Cancel</button>
         </form>
-        <p style={{ fontSize: '0.9em', color: '#666' }}>
-          Leave blank to view public entries only
-        </p>
       </div>
     </div>
   )
