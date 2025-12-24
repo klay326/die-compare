@@ -18,12 +18,12 @@ jobs:
       - name: Install and build
         run: cd frontend && npm install && npm run build
 
-      - name: Commit and push dist
+      - name: Commit and push docs
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add frontend/dist -f
-          git commit -m "Build: Update dist folder" || true
+          git add docs -f
+          git commit -m "Build: Update docs folder" || true
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

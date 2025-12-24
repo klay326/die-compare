@@ -1,0 +1,14 @@
+[
+  {
+    "id": "public-1",
+    "chip_name": "Custom SoC A",
+    "manufacturer": "Your Company",
+    "process_node": "3nm",
+    "die_size_mm2": 150,
+    "transistor_count": 15000000000,
+    "release_date": "2024-06",
+    "category": "SoC",
+    "notes": "Internal reference design",
+    "is_public": true
+  }
+]

@@ -10,7 +10,7 @@ venv/
 ENV/
 builds/
 develop-eggs/
-# dist/  # Allow frontend/dist to be committed for GitHub Pages
+# docs/  # Allow docs folder (built frontend) to be committed for GitHub Pages
 downloads/
 eggs/
 .eggs/
