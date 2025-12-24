@@ -1,11 +1,31 @@
-name: Manual build reminder
+name: Auto-build and deploy
 
 on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
-  note:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "GitHub Pages is serving from /docs folder. Run 'npm run build' locally to update."
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install and build
+        run: cd frontend && npm install && npm run build
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs -f
+          git diff --cached --exit-code || (git commit -m "Build: Auto-update docs [skip ci]" && git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:main)
